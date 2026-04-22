@@ -42,3 +42,7 @@ data/results/
 # Temporary files
 *.tmp
 *.bak
+
+# Experimental datasets (local only, not for repo)
+experimental data/
+expansion/output/
