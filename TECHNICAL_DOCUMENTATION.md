@@ -12,7 +12,7 @@
 
 1. [Project Overview](#1-project-overview)
 2. [System Architecture](#2-system-architecture)
-3. [The AMR-220 Dataset](#3-the-amr-220-dataset)
+3. [The AMR-1020 Dataset](#3-the-amr-1020-dataset)
 4. [Model 1: Rule-Based Moral AI (Top-Down Ethics)](#4-model-1-rule-based-moral-ai)
 5. [Model 2: Learning-Based Moral AI (Bottom-Up Ethics)](#5-model-2-learning-based-moral-ai)
 6. [Model 3: RLHF Moral AI (Alignment)](#6-model-3-rlhf-moral-ai)
@@ -28,7 +28,7 @@
 
 ## 1.1 What This Project Does
 
-This project implements **five fundamentally different approaches** to teaching AI systems moral reasoning. Each model represents a distinct school of ethical philosophy, and they are all tested on the same dataset of 220 ethical dilemmas so we can scientifically compare them.
+This project implements **five fundamentally different approaches** to teaching AI systems moral reasoning. Each model represents a distinct school of ethical philosophy, and they are all tested on the same dataset of 1020 ethical dilemmas so we can scientifically compare them.
 
 The research question is:
 
@@ -82,7 +82,9 @@ Ethica/
 ├── model3/                # Model 3: RLHF Ethics
 ├── model4/                # Model 4: Virtue Ethics
 ├── model5/                # Model 5: Adversarial Robustness
-└── data/                  # AMR-220 Dataset (220 dilemmas)
+├── neo4j_engine/          # Knowledge Graph Reasoning Engine
+├── expansion/             # Dataset Expansion Pipeline
+└── data/                  # AMR-1020 Dataset (1020 dilemmas)
 ```
 
 ## 2.2 Data Flow
@@ -116,7 +118,7 @@ Every scenario in the dataset is a Python dictionary with this structure:
 {
     "id": "AV_01",                          # Unique identifier
     "title": "Pedestrian vs Passenger",     # Human-readable title
-    "category": "autonomous_vehicles",      # One of 10 categories
+    "category": "autonomous_vehicles",      # One of 11 categories
     "description": "A self-driving car...", # Full scenario text
     "ethical_dimensions": [                 # Which ethical areas are involved
         "harm", "life_preservation", "fairness"
@@ -166,11 +168,11 @@ These numerical consequence scores are the **core input** that every model proce
 
 ---
 
-# 3. The AMR-220 Dataset
+# 3. The AMR-1020 Dataset
 
 ## 3.1 Overview
 
-AMR-220 (**A**rtificial **M**oral **R**easoning — **220** scenarios) is a structured dataset of ethical dilemmas. It spans 10 real-world categories where AI systems face moral decisions.
+AMR-1020 (**A**rtificial **M**oral **R**easoning — **1020** scenarios) is a structured dataset of ethical dilemmas. It spans 11 real-world categories where AI systems face moral decisions.
 
 | Category | Code | Count | File |
 |----------|------|-------|------|
@@ -184,6 +186,8 @@ AMR-220 (**A**rtificial **M**oral **R**easoning — **220** scenarios) is a stru
 | Human-AI Interaction | `human_ai_interaction` | 20 | `cat_remaining.py` |
 | Corporate Pressure | `corporate_pressure` | 20 | `cat_remaining.py` |
 | Moral Ambiguity | `moral_ambiguity` | 20 | `cat_remaining.py` |
+| Education AI | `education_ai` | 80+ | `cat_expanded.py` |
+| Expanded Datasets | multiple | 800 | `cat_expanded.py` |
 
 ## 3.2 How Scenarios Load (data/scenarios.py)
 
@@ -218,7 +222,7 @@ HUMAN_JUDGMENTS = {
         "reasoning": "minimizes overall harm"
     },
     "AV_02": { ... },
-    # ... all 220 scenarios
+    # ... all 1020 scenarios
 }
 ```
 
@@ -227,6 +231,29 @@ HUMAN_JUDGMENTS = {
 - `reasoning`: Brief justification
 
 These labels were **simulated** based on ethical principles. In a real research project, you would collect these from crowdsourced human surveys.
+
+## 3.4 Dataset Expansion Pipeline
+
+The original 220 hand-crafted scenarios were expanded to 1,020 using two published research datasets:
+
+### Moral Machine (MIT) — 100 scenarios
+
+Converted self-driving car dilemma data tested on GPT-4, GPT-3.5, PaLM 2, and Llama 2. Each row contains character types (elderly, children, criminals, doctors, pets) and we compute consequence scores from vulnerability weights and social value.
+
+### Scruples (Allen AI) — 700 scenarios
+
+- **300 Dilemma Comparisons**: Crowd-annotated "which is less ethical?" pairs from Amazon Mechanical Turk
+- **400 Anecdotes**: Real Reddit "Am I The Asshole?" posts with community votes converted into consequence scores
+
+### Conversion Pipeline Files
+
+| File | Purpose |
+|------|---------|
+| `expansion/convert_moral_machine.py` | Moral Machine CSV → AMR format |
+| `expansion/convert_scruples.py` | Scruples JSONL → AMR format |
+| `expansion/validate.py` | Validates structure, ranges, dominance checks |
+| `expansion/generate_data_file.py` | Generates `data/cat_expanded.py` |
+| `expansion/verify_all.py` | 26-test verification suite across all models |
 
 ---
 
@@ -264,7 +291,7 @@ class EthicalRule:
     rule_id: str              # "R01" to "R22"
     name: str                 # Human-readable name
     description: str          # Full description
-    category: RuleCategory    # One of 10 categories
+    category: RuleCategory    # One of 11 categories
     priority: int             # 1 (highest) to 10 (lowest)
     weight: float             # 0.0 to 1.0
     applicable_domains: list  # Which scenario categories (empty = all)
@@ -449,7 +476,7 @@ Scenario → Feature Extraction (55 dims) → Neural Network → Preference Scor
 | File | Class | Purpose |
 |------|-------|---------|
 | `model2/features.py` | `FeatureExtractor` | Converts scenarios to 55-dim vectors |
-| `model2/labels.py` | — | Human judgment labels for all 220 scenarios |
+| `model2/labels.py` | — | Human judgment labels for all 1020 scenarios |
 | `model2/network.py` | `SimpleNeuralNetwork` | From-scratch 4-layer neural network |
 | `model2/network.py` | `DecisionTreeMoral` | Alternative interpretable model |
 | `model2/trainer.py` | `MoralTrainer` | Training pipeline |
@@ -524,17 +551,17 @@ He initialization prevents vanishing/exploding gradients in ReLU networks by sca
 def forward(self, X):
     activations = [X]
     current = X
-    
+
     # Hidden layers: linear → ReLU
     for i in range(n_layers - 1):
         z = current @ weights[i] + biases[i]    # Linear: z = Wx + b
         current = maximum(0, z)                  # ReLU: max(0, z)
         activations.append(current)
-    
+
     # Output layer: linear → Sigmoid
     z = current @ weights[-1] + biases[-1]
     output = 1 / (1 + exp(-z))                   # Sigmoid
-    
+
     return output, activations
 ```
 
@@ -565,13 +592,13 @@ delta = output - y_batch  # This elegant formula is the combined derivative
 for i in range(n_layers - 1, -1, -1):
     dw = activations[i].T @ delta / batch_size   # Weight gradient
     db = mean(delta, axis=0)                       # Bias gradient
-    
+
     if i > 0:  # Propagate delta to previous layer
         delta = (delta @ weights[i].T) * relu_deriv(activations[i])
-    
+
     # Gradient clipping (prevents exploding gradients)
     dw = clip(dw, -1.0, 1.0)
-    
+
     # SGD weight update
     weights[i] -= learning_rate * dw
     biases[i] -= learning_rate * db
@@ -602,7 +629,7 @@ Features that cause larger prediction shifts are more important.
 # 1. Prepare data
 trainer = MoralTrainer("neural_network")
 trainer.prepare_data(get_all_scenarios())
-# This calls FeatureExtractor to convert all 220 scenarios into
+# This calls FeatureExtractor to convert all 1020 scenarios into
 # feature matrices X and label vectors y
 
 # 2. Train
@@ -623,7 +650,7 @@ Action 1 features → label 1.0  (preferred)
 Action 2 features → label 0.0
 ```
 
-Total training samples: ~580 (220 scenarios × ~2.6 actions average)
+Total training samples: ~580 (1020 scenarios × ~2.6 actions average)
 
 ## 5.6 Prediction (model2/predictor.py)
 
@@ -700,17 +727,17 @@ Since we can't actually collect human feedback in real-time, we **simulate** it 
 class HumanFeedbackSystem:
     def __init__(self, noise_level=0.1):
         self.noise_level = noise_level  # Simulates human disagreement
-    
+
     def rank_response(self, scenario_id, action_idx, features):
         label = get_label(scenario_id)
         preferred = label["preferred_action_idx"]
-        
+
         # Base score: 1.0 if preferred, lower otherwise
         if action_idx == preferred:
             score = 0.8 + noise()
         else:
             score = 0.3 + noise()
-        
+
         return score
 ```
 
@@ -776,22 +803,22 @@ def train_full_pipeline(scenarios, reward_epochs=80, rl_iterations=15):
     # PHASE 1: Train reward model
     pairs = feedback.collect_batch_feedback(scenarios, policy)
     reward_model.train_on_pairs(pairs, epochs=reward_epochs)
-    
+
     # PHASE 2: RL optimization
     initial_params = policy.get_parameters()  # Save for KL
-    
+
     for iteration in range(rl_iterations):
         for scenario in scenarios:
             # Get policy predictions
             scores = policy.predict(features)
             chosen = argmax(scores)
-            
+
             # Get reward for chosen action
             reward = reward_model.predict_reward(features[chosen])
-            
+
             # Update policy to increase reward
             policy_gradient_step(features, scores, chosen, reward)
-        
+
         # Track KL divergence (how far policy drifted)
         kl = estimate_kl(scenarios, initial_params)
 ```
@@ -802,10 +829,10 @@ def train_full_pipeline(scenarios, reward_epochs=80, rl_iterations=15):
 def policy_gradient_step(X, scores, chosen_idx, reward):
     chosen_x = X[chosen_idx]
     output, activations = policy.forward(chosen_x)
-    
+
     advantage = reward * 0.1  # Scaled reward signal
     delta = [[advantage]]
-    
+
     # Same backprop as neural network, but ADDING gradients
     # (gradient ascent, not descent — we want to MAXIMIZE reward)
     for i in range(n_layers - 1, -1, -1):
@@ -822,12 +849,12 @@ def policy_gradient_step(X, scores, chosen_idx, reward):
 def estimate_kl(scenarios, initial_params):
     # Compare current policy to initial policy
     current_scores = policy.predict(features)
-    
+
     policy.set_parameters(initial_params)
     initial_scores = policy.predict(features)
-    
+
     policy.set_parameters(current_params)  # Restore
-    
+
     kl = mean((current_scores - initial_scores) ** 2)
     return kl
 ```
@@ -980,15 +1007,15 @@ The balancer learns **which virtues predict human preferences** per category:
 def train_from_judgments(scenarios):
     for each scenario:
         preferred_action = human_label["preferred_action_idx"]
-        
+
         for each action:
             virtue_scores = score_all_virtues(action)
-            
+
             if action is preferred:
                 category_alignment[cat][virtue] += scores  # Positive
             else:
                 category_alignment[cat][virtue] -= scores  # Negative
-    
+
     # Convert to weight modifiers (0.7 to 1.3):
     modifier = 1.0 + clip(mean_alignment * 0.5, -0.3, 0.3)
 ```
@@ -1007,7 +1034,7 @@ if trained:
 # 3. Score each action against all 8 virtues
 for action in actions:
     virtue_scores = virtue_system.score_action_all_virtues(consequences)
-    
+
     # Weighted sum across all virtues
     total = sum(virtue_score * weight for virtue, score in virtue_scores)
 
@@ -1151,27 +1178,27 @@ def generate_adversarial_scenario(scenario, attack):
     adv = deep_copy(scenario)
     adv["id"] = f"{scenario['id']}__{attack.id}"
     adv["is_adversarial"] = True
-    
+
     for action in adv["actions"]:
         consequences = action["consequences"]
-        
+
         # Apply boosts (make harmful look good)
         for key, delta in attack.modifier["boost_harmful"].items():
             consequences[key] = clip(consequences[key] + delta, 0, 1)
-        
+
         # Apply suppressions (hide ethical concerns)
         for key, delta in attack.modifier["suppress_ethical"].items():
             consequences[key] = clip(consequences[key] + delta, 0, 1)
-        
+
         # Add noise if specified
         if noise_level > 0:
             for key in consequences:
                 consequences[key] += normal(0, noise_level)
-    
+
     return adv
 ```
 
-**Dataset expansion:** 220 scenarios × 5 attacks each = **1,100 adversarial scenarios**.
+**Dataset expansion:** 1020 scenarios × 5 attacks each = **5,100 adversarial scenarios**.
 
 ## 8.5 Failure Detection (model5/detector.py)
 
@@ -1265,7 +1292,7 @@ def init_m2():
 ## 9.2 How to Run
 
 ```bash
-python -m streamlit run app.py --server.headless true --server.port 8501
+streamlit run app.py
 ```
 
 Open `http://localhost:8501` in your browser.
@@ -1314,13 +1341,12 @@ Open `http://localhost:8501` in your browser.
 ## Step 1: Set Up
 
 ```bash
-pip install streamlit pandas plotly numpy
-mkdir ethica && cd ethica
+pip install -r requirements.txt
 ```
 
 ## Step 2: Create the Dataset
 
-1. Define 220 ethical dilemmas as Python dictionaries
+1. Define 1020 ethical dilemmas as Python dictionaries
 2. Each needs: id, title, category, description, ethical_dimensions, actions with consequences
 3. Consequences must be numerical (0-1) across standardized keys
 4. Store in `data/` directory
@@ -1372,6 +1398,86 @@ mkdir ethica && cd ethica
 
 ---
 
+# 12. Neo4j Knowledge Graph Engine
+
+## 12.1 Overview
+
+Beyond the 5 core models, Ethica includes a **Neo4j-backed knowledge graph** that stores all ethical relationships as a connected graph. This enables graph-based moral reasoning that traverses relationships between scenarios, actions, consequences, ethical principles, and virtues.
+
+### Files
+
+| File | Class | Purpose |
+|------|-------|---------|
+| `neo4j_engine/schema.py` | `EthicalGraphSchema` | Graph schema (5 node types, 6 relationships) |
+| `neo4j_engine/connector.py` | `Neo4jConnector` | Neo4j Aura cloud database connection |
+| `neo4j_engine/queries.py` | `EthicalGraphQueries` | Graph queries (scoring, path finding) |
+| `neo4j_engine/reasoning.py` | `GraphReasoningEngine` | Graph-based reasoning (standalone + hybrid) |
+| `neo4j_engine/explanation.py` | `GraphExplanationGenerator` | Generates explanations from graph paths |
+| `neo4j_engine/test_offline.py` | — | Full offline test suite (no database needed) |
+
+## 12.2 Graph Schema
+
+```
+Scenario ──HAS_ACTION──→ Action ──HAS_CONSEQUENCE──→ Consequence
+                                                           │
+                                                      TRIGGERS
+                                                           │
+                                                      Principle ──ALIGNS_WITH──→ Virtue
+                                                                                   │
+                                                                          CONFLICTS_WITH
+                                                                                   │
+                                                                                Virtue
+```
+
+**5 Node Types:**
+- **Scenario**: The ethical dilemma (id, title, category, description)
+- **Action**: A possible choice (id, description)
+- **Consequence**: A numerical outcome (key, value, influence weight)
+- **Principle**: An ethical rule like "Preserve Human Life" (name, priority, weight)
+- **Virtue**: A character trait like "Compassion" (name, category, weight)
+
+## 12.3 Three Reasoning Modes
+
+1. **Standalone graph reasoning**: Pure graph traversal scoring — follows Scenario → Action → Consequence → Principle → Virtue paths to compute moral scores
+2. **Model 1 hybrid**: Blends graph scores with Model 1 rule scores using a configurable weight (default: 40% graph, 60% Model 1)
+3. **Model 4 hybrid**: Blends graph scores with Model 4 virtue scores
+
+## 12.4 How Graph Moral Scoring Works
+
+```python
+# For each action in a scenario:
+# 1. Get all consequences
+# 2. For each consequence, find which principles it triggers
+# 3. For each principle, find which virtues it aligns with
+# 4. Compute weighted score:
+#    score = Σ (consequence_value × principle_weight × virtue_alignment)
+```
+
+The graph engine also generates full **explanation paths** showing exactly which consequences triggered which principles and which virtues were involved — providing maximum transparency.
+
+---
+
+# 13. Project Statistics
+
+| Metric | Value |
+|--------|-------|
+| Total lines of code | 21,845 |
+| Python files | 60 |
+| Python lines | 20,279 |
+| Total scenarios | 1,020 |
+| Categories | 11 |
+| Ethical rules (Model 1) | 22 |
+| Virtues (Model 4) | 8 |
+| Attack types (Model 5) | 18 across 7 categories |
+| Consequence keys | 22 |
+| Ethical dimensions | 18 |
+| Neural network params | ~12K (55→128→64→32→1) |
+| Verification tests | 26 (all passing) |
+
+---
+
 **End of Technical Documentation**
 
 *This document contains everything needed to understand, reproduce, and extend the Ethica AI Morality Research Framework.*
+
+*Built by Pratyush — 20,279 lines of Python | 1,020 ethical dilemmas | 5 models | 1 goal: making AI ethical.*
