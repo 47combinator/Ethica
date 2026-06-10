@@ -1,3 +1,10 @@
+<!--
+  Copyright (c) 2025 Pratyush Chaudhari. All rights reserved.
+  Part of the Ethica project.
+  Research: https://zenodo.org/records/20544025
+  For academic study and personal learning only. No commercial use.
+-->
+
 # Ethica
 
 <p align="center">
@@ -9,8 +16,45 @@
   <img src="https://img.shields.io/badge/Streamlit-1.30%2B-FF4B4B?logo=streamlit&logoColor=white" alt="Streamlit">
   <img src="https://img.shields.io/badge/Models-5-green" alt="Models">
   <img src="https://img.shields.io/badge/Scenarios-1020-orange" alt="Scenarios">
-  <img src="https://img.shields.io/badge/License-GPLv3-blue.svg" alt="License">
+  <img src="https://img.shields.io/badge/Research-Published-brightgreen" alt="Published">
 </p>
+
+---
+
+## 📄 Published Research
+
+> **ERTS: Adversarial Robustness Testing of Ethical AI via Semantic Perturbation in a Bounded Consequence Space**
+>
+> *Pratyush Chaudhari*
+>
+> 📎 **DOI**: [https://zenodo.org/records/20544025](https://zenodo.org/records/20544025)
+
+The Ethical Robustness Testing System (ERTS), derived from Model 5 of this project, has been published as an independent research framework. The full ERTS codebase is available at:
+🔗 [https://github.com/47combinator/Ethical-Robustness-Testing-System](https://github.com/47combinator/Ethical-Robustness-Testing-System)
+
+> [!IMPORTANT]
+> **Research Publication Status:** Several sections of this repository are part of **ongoing research publications**. Some components are published (see Zenodo DOI above), while others are actively in progress toward future publication. Please cite appropriately if referencing this work.
+
+---
+
+## ⚖️ Copyright & Usage Restrictions
+
+**Copyright © 2025 Pratyush Chaudhari. All rights reserved.**
+
+This source code is provided **strictly for academic study, personal learning, and admiration only**.
+
+> [!CAUTION]
+> **The following uses are PROHIBITED without explicit written permission from the author:**
+> - Commercial use of any kind
+> - Corporate deployment or integration
+> - Using this source code (in whole or in part) to generate revenue or wealth
+> - Redistribution for commercial purposes
+> - Training commercial AI models using this code or methodology
+> - Using this codebase or its derivatives in any corporate or for-profit setting
+>
+> Violation of these terms may result in legal action under applicable copyright and intellectual property laws.
+
+If you wish to use this work beyond personal study, contact the author through GitHub: [@47combinator](https://github.com/47combinator)
 
 ---
 
@@ -38,7 +82,7 @@ This is the same class of problems studied by **OpenAI**, **Anthropic**, and **G
 ### Decision Agreement Matrix (1020 scenarios)
 
 |  | M1 | M2 | M3 | M4 |
-|--|----|----|----|----|
+|--|----|----|----|---|
 | **M1** | 100% | 92.7% | 69.1% | 81.8% |
 | **M2** | — | 100% | 71.4% | 85.5% |
 | **M3** | — | — | 100% | 72.3% |
@@ -186,29 +230,6 @@ python expansion/verify_all.py
 
 ---
 
-## Dashboard Features
-
-### Model Selection
-Choose any of the 5 models from the sidebar. Each model has its own themed interface:
-
-- **Model 1** (🟢 Green) — Dashboard, Scenario Explorer, Full Evaluation, Rule System
-- **Model 2** (🟣 Purple) — Dashboard with training curves, Scenario Explorer, Training Insights
-- **Model 3** (🟡 Gold) — RLHF training progress, sycophancy tracking, reward analysis
-- **Model 4** (🩷 Pink) — Virtue radar charts, context adaptation heatmap, conflict analysis
-- **Model 5** (🔴 Red) — Attack Library, Stress Test, Failure Analysis, 5-Model Comparison
-
-### Key Pages
-
-| Page | Description |
-|------|------------|
-| **Scenario Explorer** | Pick any scenario, run a model, see the full decision + explanation |
-| **Full Evaluation** | Run all 1020 scenarios, see accuracy, consistency, fairness metrics |
-| **Stress Test** | Configure attacks (scenarios × attacks), see robustness rankings |
-| **Failure Analysis** | Examine critical failures, severity distribution, model vulnerabilities |
-| **5-Model Comparison** | Normal scores + adversarial robustness side-by-side |
-
----
-
 ## Model Details
 
 ### Model 1: Rule-Based (Deontological)
@@ -241,6 +262,7 @@ Choose any of the 5 models from the sidebar. Each model has its own themed inter
 - Generates **5100+ adversarial variants** from the 1020-scenario dataset
 - **Moral Robustness Score** = (Consistency + Resistance + Fairness + Harm Avoidance + Confidence Stability) / 5
 - Detects and classifies **critical moral failures**
+- 📄 *This model has been independently published as ERTS — see [Published Research](#-published-research) above*
 
 ---
 
@@ -286,10 +308,20 @@ All ML models are implemented **from scratch** using only NumPy — no scikit-le
 If you use this research in academic work, please cite:
 
 ```bibtex
-@software{Ethica_2026,
+@article{chaudhari2025erts,
+  title={ERTS: Adversarial Robustness Testing of Ethical AI via Semantic Perturbation in a Bounded Consequence Space},
+  author={Chaudhari, Pratyush},
+  year={2025},
+  doi={10.5281/zenodo.20544025},
+  url={https://zenodo.org/records/20544025}
+}
+```
+
+```bibtex
+@software{chaudhari2025ethica,
   title     = {Ethica: Comparing Five Approaches to Machine Ethics},
-  author    = {Pratyush},
-  year      = {2026},
+  author    = {Chaudhari, Pratyush},
+  year      = {2025},
   url       = {https://github.com/47combinator/Ethica},
   note      = {5-model framework comparing rule-based, learning-based, RLHF, virtue ethics, and adversarial approaches to AI morality}
 }
@@ -297,25 +329,13 @@ If you use this research in academic work, please cite:
 
 ---
 
-## License
+## Author
 
-This project is licensed under the GNU General Public License v3.0 — see the [LICENSE](LICENSE) file for details.
-
----
-
-## Contributing
-
-Contributions are welcome! Areas of interest:
-
-- [ ] Additional ethical dilemma scenarios
-- [ ] New attack types for Model 5
-- [ ] Cross-cultural virtue definitions for Model 4
-- [ ] Real human judgment data (crowdsourced)
-- [ ] Integration with LLM-based moral reasoning
+**Pratyush Chaudhari** — Independent Researcher
+- GitHub: [@47combinator](https://github.com/47combinator)
+- ERTS: [Ethical Robustness Testing System](https://github.com/47combinator/Ethical-Robustness-Testing-System)
 
 ---
 
-<p align="center">
-  <strong>Built for AI Ethics Research</strong><br>
-  <em>Exploring how different moral philosophies shape artificial intelligence</em>
-</p>
+**Copyright © 2025 Pratyush Chaudhari. All rights reserved.**
+*This source code is provided for academic study and personal learning only. No commercial use permitted.*
