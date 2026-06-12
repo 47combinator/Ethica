@@ -17,6 +17,8 @@
   <img src="https://img.shields.io/badge/Models-5-green" alt="Models">
   <img src="https://img.shields.io/badge/Scenarios-1020-orange" alt="Scenarios">
   <img src="https://img.shields.io/badge/Research-Published-brightgreen" alt="Published">
+  <a href="https://arxiv.org/abs/2606.13282v1"><img src="https://img.shields.io/badge/arXiv-2606.13282-b31b1b?logo=arxiv&logoColor=white" alt="arXiv"></a>
+  <a href="https://scholar.google.com/citations?hl=en&user=HJ3wHFQAAAAJ"><img src="https://img.shields.io/badge/Google%20Scholar-Profile-4285F4?logo=googlescholar&logoColor=white" alt="Google Scholar"></a>
 </p>
 
 ---
@@ -27,9 +29,11 @@
 >
 > *Pratyush Chaudhari*
 >
-> 📎 **DOI**: [https://zenodo.org/records/20544025](https://zenodo.org/records/20544025)
+> 📄 **arXiv**: [https://arxiv.org/abs/2606.13282v1](https://arxiv.org/abs/2606.13282v1)
+>
+> 📎 **Zenodo DOI**: [https://zenodo.org/records/20544025](https://zenodo.org/records/20544025)
 
-The Ethical Robustness Testing System (ERTS), derived from Model 5 of this project, has been published as an independent research framework. The full ERTS codebase is available at:
+The ERTS paper has been published on **arXiv** as a preprint (arXiv:2606.13282). The Ethical Robustness Testing System (ERTS), derived from Model 5 of this project, has been published as an independent research framework. The full ERTS codebase is available at:
 🔗 [https://github.com/47combinator/Ethical-Robustness-Testing-System](https://github.com/47combinator/Ethical-Robustness-Testing-System)
 
 > [!IMPORTANT]
@@ -312,8 +316,10 @@ If you use this research in academic work, please cite:
   title={ERTS: Adversarial Robustness Testing of Ethical AI via Semantic Perturbation in a Bounded Consequence Space},
   author={Chaudhari, Pratyush},
   year={2025},
-  doi={10.5281/zenodo.20544025},
-  url={https://zenodo.org/records/20544025}
+  eprint={2606.13282},
+  archivePrefix={arXiv},
+  primaryClass={cs.AI},
+  url={https://arxiv.org/abs/2606.13282v1}
 }
 ```
 
@@ -332,8 +338,10 @@ If you use this research in academic work, please cite:
 ## Author
 
 **Pratyush Chaudhari** — Independent Researcher
-- GitHub: [@47combinator](https://github.com/47combinator)
-- ERTS: [Ethical Robustness Testing System](https://github.com/47combinator/Ethical-Robustness-Testing-System)
+- 🎓 Google Scholar: [Pratyush Chaudhari](https://scholar.google.com/citations?hl=en&user=HJ3wHFQAAAAJ)
+- 🐙 GitHub: [@47combinator](https://github.com/47combinator)
+- 📄 arXiv: [2606.13282](https://arxiv.org/abs/2606.13282v1)
+- 🔬 ERTS: [Ethical Robustness Testing System](https://github.com/47combinator/Ethical-Robustness-Testing-System)
 
 ---
 
